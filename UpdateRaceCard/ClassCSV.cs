@@ -13,10 +13,6 @@ namespace UpdateRaceCard
 
         public void setData(long indRow, long indCol, string InputData)
         {
-            if(indRow == 419 && indCol == 6)
-            {
-                System.Diagnostics.Debug.WriteLine(InputData);
-            }
             string[] arrdataCsv;
             string[] arrdatadataCsv;
             arrdataCsv = dataCsvAll.Split(new[] {"\r\n"}, StringSplitOptions.None);
