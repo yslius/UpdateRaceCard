@@ -20,7 +20,7 @@ namespace UpdateRaceCard
     }
     class ClcRaceCardStock
     {
-        private string sid = "Test";
+        //private string sid = "Test";
         Form1 _form1;
         private clsCodeConv objCodeConv;
 
@@ -29,10 +29,11 @@ namespace UpdateRaceCard
         int count = 0;
         clcCommon cCommon;
 
-        public ClcRaceCardStock(Form1 form1)
+        public ClcRaceCardStock(clcCommon cCommon1, Form1 form1)
         {
             _form1 = form1;
-            cCommon = new clcCommon(_form1);
+            //cCommon = new clcCommon(_form1.axJVLink1);
+            cCommon = cCommon1;
             cLog = new ClassLog();
             this.objCodeConv = new clsCodeConv();
         }
@@ -78,50 +79,49 @@ namespace UpdateRaceCard
 
             //try
             //{
-                
-                _form1.tmrDownload.Enabled = false;
-                _form1.prgJVRead.Value = 0;
-                 if (!cCommon.isJVOpen("RACE", strDate, option))
+
+            _form1.prgJVRead.Value = 0;
+            if (!cCommon.isJVOpen("RACE", strDate, option))
+            {
+                return -1;
+            }
+            do
+            {
+                retbuff = cCommon.loopJVRead(size, count);
+                if (retbuff == "" || retbuff == "END")
+                    break;
+                if (retbuff.Substring(0, 2) == "HR")
                 {
-                    return -1;
+                    setDataHR(cCSV, retbuff, datetimeTarg);
                 }
-                do
+                if (retbuff.Substring(0, 2) == "O1")
                 {
-                    retbuff = cCommon.loopJVRead(size, count);
-                    if (retbuff == "" || retbuff == "END")
+                    setDataO1(cCSV, retbuff, datetimeTarg);
+                }
+                if (retbuff.Substring(0, 2) == "RA")
+                {
+                    setDataRA(cCSV, retbuff, datetimeTarg);
+                }
+                if (retbuff.Substring(0, 2) == "SE")
+                {
+                    if (setDataSE(cCSV, retbuff, datetimeTarg, isFind))
                         break;
-                    if (retbuff.Substring(0, 2) == "HR")
-                    {
-                        setDataHR(cCSV, retbuff, datetimeTarg);
-                    }
-                    if (retbuff.Substring(0, 2) == "O1")
-                    {
-                        setDataO1(cCSV, retbuff, datetimeTarg);
-                    }
-                    if (retbuff.Substring(0, 2) == "RA")
-                    {
-                        setDataRA(cCSV, retbuff, datetimeTarg);
-                    }
-                    if (retbuff.Substring(0, 2) == "SE")
-                    {
-                        if (setDataSE(cCSV, retbuff, datetimeTarg, isFind))
-                            break;
-                        isFind = true;
-                    }
-                    cntLoop++;
+                    isFind = true;
                 }
-                while (cntLoop <= 100000);
-                _form1.prgJVRead.Maximum++;
-                _form1.prgJVRead.Value =
-                    _form1.prgJVRead.Maximum;
-                _form1.prgJVRead.Maximum--;
-                _form1.prgJVRead.Value--;
+                cntLoop++;
+            }
+            while (cntLoop <= 100000);
+            _form1.prgJVRead.Maximum++;
+            _form1.prgJVRead.Value =
+                _form1.prgJVRead.Maximum;
+            _form1.prgJVRead.Maximum--;
+            _form1.prgJVRead.Value--;
 
             if (!isFind)
-                {
-                    cLog.writeLog("[GetStockDataDetailData1]Not Find：" +
-                    cntLoop);
-                }
+            {
+                cLog.writeLog("[GetStockDataDetailData1]Not Find：" +
+                cntLoop);
+            }
 
             //}
             //catch (Exception ex)
@@ -141,8 +141,6 @@ namespace UpdateRaceCard
 
         int GetStockDataDetailData2(ClassCSV cCSV, DateTime datetimeTarg)
         {
-            
-            List<string> stringList = new List<string>();
             TimeSpan timeSpan = new TimeSpan(0, 0, 0, 0);
             string strDate =
                 (datetimeTarg - timeSpan).ToString("yyyyMMdd");
@@ -156,7 +154,6 @@ namespace UpdateRaceCard
 
             try
             {
-                _form1.tmrDownload.Enabled = false;
                 _form1.prgJVRead.Value = 0;
                 if (!cCommon.isJVOpen("MING", strDate, option))
                 {
@@ -173,7 +170,7 @@ namespace UpdateRaceCard
                             break;
                         isFind = true;
                     }
-                    
+
                     cntLoop++;
                 }
                 while (cntLoop <= 10000);
@@ -245,9 +242,9 @@ namespace UpdateRaceCard
             // 書き込み
             for (int i = 0; i < numUma; i++)
             {
-                if(listDM[i].Umaban <= 18)
+                if (listDM[i].Umaban <= 18)
                 {
-                    cCSV.setData(rowTarget + 1 + listDM[i].Umaban, 9, 
+                    cCSV.setData(rowTarget + 1 + listDM[i].Umaban, 9,
                         (i + 1).ToString());
                 }
             }
@@ -261,9 +258,7 @@ namespace UpdateRaceCard
             DateTime dateTime;
             string strShortJyo;
             string strJyo;
-            string tmp;
             long rowTarget;
-            int res;
 
             JVData_Struct.JV_HR_PAY mHrData =
                 new JVData_Struct.JV_HR_PAY();
@@ -313,11 +308,11 @@ namespace UpdateRaceCard
             rowTarget = cCSV.getDataRow(strShortJyo,
                 int.Parse(mO1Data.id.RaceNum));
             numUma = int.Parse(cCSV.getData(rowTarget, 4));
-            for(int i = 0;i < numUma; i++)
+            for (int i = 0; i < numUma; i++)
             {
                 rowWrite = rowTarget + 1 +
                     int.Parse(mO1Data.OddsTansyoInfo[i].Umaban);
-                if(mO1Data.OddsTansyoInfo[i].Odds.Contains("*") ||
+                if (mO1Data.OddsTansyoInfo[i].Odds.Contains("*") ||
                     mO1Data.OddsTansyoInfo[i].Odds.Contains("-"))
                     odds = 0;
                 else
@@ -400,8 +395,6 @@ namespace UpdateRaceCard
             JVData_Struct.JV_SE_RACE_UMA mSeData =
                 new JVData_Struct.JV_SE_RACE_UMA();
             mSeData.SetDataB(ref retbuff);
-            System.Diagnostics.Debug.WriteLine((mSeData.id.Year +
-            mSeData.id.MonthDay).Insert(4, "/").Insert(7, "/"));
             dateTime = DateTime.Parse(
             (mSeData.id.Year +
             mSeData.id.MonthDay).Insert(4, "/").Insert(7, "/"));
@@ -439,7 +432,7 @@ namespace UpdateRaceCard
                 rowWrite = rowTarget + 1 + long.Parse(mSeData.Umaban);
                 cCSV.setData(rowWrite, 11, (int.Parse(mSeData.KakuteiJyuni)).ToString());
             }
-               
+
             return false;
 
         }

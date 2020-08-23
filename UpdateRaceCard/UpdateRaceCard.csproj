@@ -54,13 +54,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClassCSV.cs" />
-    <Compile Include="ClassJVLink.cs" />
     <Compile Include="ClassLog.cs" />
     <Compile Include="clcCommon.cs" />
     <Compile Include="clcRaceCard.cs" />
     <Compile Include="clcRaceCardRT.cs" />
     <Compile Include="clcRaceCardStock.cs" />
-    <Compile Include="clcTrain.cs" />
     <Compile Include="clsCodeConv.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>

@@ -8,27 +8,33 @@ namespace UpdateRaceCard
 {
     class clcRaceCardRT
     {
-        private string sid = "Test";
+        //private string sid = "Test";
         Form1 _form1;
+        //AxJVDTLabLib.AxJVLink _axJVLink1;
         private clsCodeConv objCodeConv;
-        private OperateForm cOperateForm;
+        //private OperateForm cOperateForm;
         private ClassLog cLog;
         int size = 0;
         int count = 0;
         clcCommon cCommon;
 
-        public clcRaceCardRT(Form1 form1)
+        //public clcRaceCardRT(Form1 form1)
+        //public clcRaceCardRT(clcCommon cCommon1, AxJVDTLabLib.AxJVLink axJVLink1)
+        public clcRaceCardRT(clcCommon cCommon1, Form1 form1)
         {
             _form1 = form1;
-            cCommon = new clcCommon(_form1);
+            //_axJVLink1 = axJVLink1;
+            //cCommon = new clcCommon(axJVLink1);
+            cCommon = cCommon1;
             cLog = new ClassLog();
-            this.objCodeConv = new clsCodeConv();
+            objCodeConv = new clsCodeConv();
         }
 
         public void GetRTDataDetailData(ClassCSV cCSV, DateTime datetimeTarg)
         {
             if (GetRTDataDetailData1(cCSV, datetimeTarg) < 0)
             {
+                //_axJVLink1.JVClose();
                 _form1.axJVLink1.JVClose();
                 return;
             }
@@ -36,6 +42,7 @@ namespace UpdateRaceCard
             _form1.prgDownload.Value--;
             if (GetRTDataDetailData2(cCSV, datetimeTarg) < 0)
             {
+                //_axJVLink1.JVClose();
                 _form1.axJVLink1.JVClose();
                 return;
             }
@@ -46,11 +53,9 @@ namespace UpdateRaceCard
 
         int GetRTDataDetailData1(ClassCSV cCSV, DateTime datetimeTarg)
         {
-            List<string> stringList = new List<string>();
             TimeSpan timeSpan = new TimeSpan(0, 0, 0, 0);
             string strDate =
                 (datetimeTarg - timeSpan).ToString("yyyyMMdd");
-            bool isFind = false;
             string retbuff;
             long cntLoop = 0;
 
@@ -59,7 +64,6 @@ namespace UpdateRaceCard
 
             try
             {
-                _form1.tmrDownload.Enabled = false;
                 _form1.prgJVRead.Value = 0;
                 _form1.prgJVRead.Maximum = 100;
                 do
@@ -84,12 +88,6 @@ namespace UpdateRaceCard
                     _form1.prgJVRead.Maximum;
                 _form1.prgJVRead.Maximum--;
 
-                if (!isFind)
-                {
-                    cLog.writeLog("[GetRTDataDetailData1]Not Find：" +
-                    cntLoop);
-                }
-
             }
             catch (Exception ex)
             {
@@ -108,7 +106,6 @@ namespace UpdateRaceCard
 
         int GetRTDataDetailData2(ClassCSV cCSV, DateTime datetimeTarg)
         {
-            DateTime timeRace;
             TimeSpan timeSpan = new TimeSpan(0, 0, 3, 0);
             string strJyo;
             string codeJyo;
@@ -117,10 +114,8 @@ namespace UpdateRaceCard
             string numRace;
             int numUma;
             long rowTarget;
-            bool isGetData;
             long rowMax;
 
-            _form1.tmrDownload.Enabled = false;
             _form1.prgJVRead.Value = 0;
 
             rowTarget = 2;
@@ -134,112 +129,20 @@ namespace UpdateRaceCard
                 strJyo = cCommon.ShortJyo2Jyo(tmp);
                 codeJyo = cCommon.JyogyakuCord(strJyo);
                 // レース番号
-                if(rowTarget == 386 ||
-                    rowTarget == 404)
-                {
-                    System.Diagnostics.Debug.WriteLine(rowTarget);
-                }
                 tmpint = int.Parse(cCSV.getData(rowTarget, 6));
                 numRace = String.Format("{0:D2}", tmpint);
                 // 頭数
                 numUma = int.Parse(cCSV.getData(rowTarget, 4));
-                isGetData = false;
-                if (DateTime.Now.Date == datetimeTarg.Date)
-                {
-                    timeRace = new DateTime(datetimeTarg.Year,
-                    datetimeTarg.Month,
-                    datetimeTarg.Day,
-                    int.Parse(cCSV.getData(rowTarget, 5).Substring(0, 2)),
-                    int.Parse(cCSV.getData(rowTarget, 5).Substring(3, 2)),
-                    0);
-                    timeRace = timeRace + timeSpan;
-                    if (timeRace < DateTime.Now)
-                        isGetData = true;
-                }
-                else
-                    isGetData = true;
-                if (!isGetData)
-                {
-                    //rowTarget += long.Parse(cCSV.getData(rowTarget, 4)) + 3;
-                    //continue;
-                    //_form1.prgJVRead.Value = (int)rowTarget;
-                }
-
                 operateLoop(cCSV, datetimeTarg, codeJyo, numRace, rowTarget);
-
-                //if (!cCommon.isJVOpenReal("0B12",
-                //    datetimeTarg.ToString("yyyyMMdd") + codeJyo + numRace))
-                //{
-
-                //}
-                //do
-                //{
-                //    retbuff = cCommon.loopJVRead(size, count);
-                //    if (retbuff == "" || retbuff == "END")
-                //        break;
-                //    if (retbuff.Substring(0, 2) == "SE")
-                //    {
-                //        setDataSE(cCSV, retbuff, rowTarget);
-                //    }
-                //    if (retbuff.Substring(0, 2) == "HR")
-                //    {
-                //        setDataHR(cCSV, retbuff, rowTarget);
-                //    }
-                //    cntLoop++;
-                //}
-                //while (cntLoop <= 10000);
-
-                //_form1.axJVLink1.JVClose();
-                //if (cCommon.checkInit() != 0)
-                //    return -1;
 
                 // 速報オッズ（単複枠）の呼び出し
                 operateOne(cCSV, datetimeTarg, codeJyo, numRace, numUma, rowTarget, "0B31");
-                //if (!cCommon.isJVOpenReal("0B31",
-                //    datetimeTarg.ToString("yyyyMMdd") + codeJyo + numRace))
-                //{
-
-                //}
-                //retbuff = cCommon.loopJVRead(size, count);
-                //if (retbuff == "" || retbuff == "END")
-                //{
-
-                //}
-                //setData0B31(cCSV, retbuff, rowTarget, numUma);
-                //_form1.axJVLink1.JVClose();
-                //if (cCommon.checkInit() != 0)
-                //    return -1;
 
                 // 速報タイム型データマイニング予想の呼び出し
                 operateOne(cCSV, datetimeTarg, codeJyo, numRace, numUma, rowTarget, "0B13");
 
-                //if (!cCommon.isJVOpenReal("0B13",
-                //    datetimeTarg.ToString("yyyyMMdd") + codeJyo + numRace))
-                //    return -1;
-                //retbuff = cCommon.loopJVRead(size, count);
-                //if (retbuff == "" || retbuff == "END")
-                //{
-
-                //}
-                //setData0B13(cCSV, retbuff, rowTarget, numUma);
-                //_form1.axJVLink1.JVClose();
-                //if (cCommon.checkInit() != 0)
-                //    return -1;
-
                 // 速報馬体重の呼び出し
                 operateOne(cCSV, datetimeTarg, codeJyo, numRace, numUma, rowTarget, "0B11");
-                //if (!cCommon.isJVOpenReal("0B11",
-                //    datetimeTarg.ToString("yyyyMMdd") + codeJyo + numRace))
-                //    return -1;
-                //retbuff = cCommon.loopJVRead(size, count);
-                //if (retbuff == "" || retbuff == "END")
-                //{
-
-                //}
-                //setData0B11(cCSV, retbuff, rowTarget, numUma);
-                //_form1.axJVLink1.JVClose();
-                //if (cCommon.checkInit() != 0)
-                //    return -1;
 
                 _form1.prgJVRead.Value = (int)rowTarget;
                 _form1.prgJVRead.Value--;
@@ -273,6 +176,7 @@ namespace UpdateRaceCard
             if (!cCommon.isJVOpenReal("0B12",
                     datetimeTarg.ToString("yyyyMMdd") + codeJyo + numRace))
             {
+                //_axJVLink1.JVClose();
                 _form1.axJVLink1.JVClose();
                 return true;
             }
@@ -313,6 +217,7 @@ namespace UpdateRaceCard
             retbuff = cCommon.loopJVRead(size, count);
             if (retbuff == "" || retbuff == "END")
             {
+                //_axJVLink1.JVClose();
                 _form1.axJVLink1.JVClose();
                 return true;
             }
@@ -329,6 +234,7 @@ namespace UpdateRaceCard
                 setData0B11(cCSV, retbuff, rowTarget, numUma);
             }
 
+            //_axJVLink1.JVClose();
             _form1.axJVLink1.JVClose();
             
             return true;
@@ -449,8 +355,6 @@ namespace UpdateRaceCard
         }
         void setDataHR(ClassCSV cCSV, string retbuff, long rowTarget)
         {
-            long rowWrite;
-
             JVData_Struct.JV_HR_PAY mHrData =
                 new JVData_Struct.JV_HR_PAY();
             mHrData.SetDataB(ref retbuff);
@@ -462,7 +366,6 @@ namespace UpdateRaceCard
 
         void setDataWE(ClassCSV cCSV, string retbuff, DateTime datetimeTarg)
         {
-            DateTime dateTime;
             DateTime timeHappyo;
             DateTime timeRace;
             string strShortJyo;
@@ -538,10 +441,6 @@ namespace UpdateRaceCard
                     0);
                 while (rowTarget < cCSV.getDataMaxRow())
                 {
-                    System.Diagnostics.Debug.WriteLine(cCSV.getData(rowTarget, 5).Substring(0, 2));
-                    System.Diagnostics.Debug.WriteLine(int.Parse(cCSV.getData(rowTarget, 5).Substring(0, 2)));
-                    System.Diagnostics.Debug.WriteLine(cCSV.getData(rowTarget, 5).Substring(3, 2));
-                    System.Diagnostics.Debug.WriteLine(int.Parse(cCSV.getData(rowTarget, 5).Substring(3, 2)));
                     timeRace = new DateTime(datetimeTarg.Year,
                     datetimeTarg.Month,
                     datetimeTarg.Day,

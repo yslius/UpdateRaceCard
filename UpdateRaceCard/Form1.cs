@@ -12,13 +12,9 @@ namespace UpdateRaceCard
 {
     public partial class Form1 : Form
     {
-
-        private int nDownloadCount;
-        private bool JVOpenFlg;
-        private clsCodeConv objCodeConv;
         private OperateForm cOperateForm;
-        private ClassJVLink cJVLink;
-        private Timer timer;
+        //private ClassJVLink cJVLink;
+        clcCommon cCommon;
         private ClassLog cLog = new ClassLog();
         public Form1()
         {
@@ -29,11 +25,17 @@ namespace UpdateRaceCard
         {
             cLog.writeLog("Form1_Load " + this.Text);
 
-            cJVLink = new ClassJVLink(this);
-            if (cJVLink.checkInit() != 0)
+            //cJVLink = new ClassJVLink(this);
+            //if (cJVLink.checkInit() != 0)
+            //{
+            //    //return;
+            //}
+            cCommon = new clcCommon(axJVLink1);
+            if (cCommon.checkInit() != 0)
             {
                 //return;
             }
+
             cOperateForm = new OperateForm(this);
 
         }
@@ -41,19 +43,24 @@ namespace UpdateRaceCard
         private void mnuConfJV_Click(object sender, EventArgs e)
         {
             cLog.writeLog("mnuConfJV_Click");
-            cJVLink.callMenu();
+            //cJVLink.callMenu();
+            cCommon.callMenu();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             cLog.writeLog("button1_Click");
             //cOperateForm.readFolder();
+            prgJVRead.Value = 0;
+            prgDownload.Value = 0;
             cOperateForm.readDate();
         }
 
         private void btnGetJVData_Click(object sender, EventArgs e)
         {
-            cLog.writeLog("btnGetJVData_Click");
+            //var sw = new System.Diagnostics.Stopwatch();
+            //sw.Start();
+            //cLog.writeLog("btnGetJVData_Click");
 
             if (this.textBox1.Text == "")
             {
@@ -63,14 +70,16 @@ namespace UpdateRaceCard
                 return;
             }
 
-            clcRaceCard cRaceCard = new clcRaceCard(this);
-            cRaceCard.update();
+            //clcRaceCard cRaceCard = new clcRaceCard(this);
+            //clcRaceCard cRaceCard = new clcRaceCard(cCommon, cOperateForm, axJVLink1);
+            clcRaceCard cRaceCard = new clcRaceCard(cCommon, cOperateForm, this);
+            cRaceCard.update(textBox1.Text);
+
+            //sw.Stop();
+            //TimeSpan ts = sw.Elapsed;
+            //rtbData.Text = $"{ts}";
 
         }
 
-        private void tmrDownload_Tick(object sender, EventArgs e)
-        {
-
-        }
     }
 }

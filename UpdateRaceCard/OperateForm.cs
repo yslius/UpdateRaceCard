@@ -78,6 +78,7 @@ namespace UpdateRaceCard
                             dateTime.ToLongDateString();
                         flag = true;
                     }
+                    streamReader.Close();
                 }
                 catch (Exception ex)
                 {

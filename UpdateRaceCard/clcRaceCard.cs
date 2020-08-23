@@ -14,6 +14,7 @@ namespace UpdateRaceCard
     public class clcRaceCard
     {
         Form1 _form1;
+        //AxJVDTLabLib.AxJVLink _axJVLink1;
         private OperateForm cOperateForm;
         private ClassLog cLog;
         private ClcRaceCardStock cRaceCardStock;
@@ -26,27 +27,34 @@ namespace UpdateRaceCard
             "ワイド1", "ワイド1配当", "ワイド2",
             "ワイド2配当", "ワイド3", "ワイド3配当" };
 
-        public clcRaceCard(Form1 form1)
+        //public clcRaceCard(Form1 form1)
+        //public clcRaceCard(clcCommon cCommon, OperateForm cOperateForm1, 
+        //    AxJVDTLabLib.AxJVLink axJVLink1)
+        public clcRaceCard(clcCommon cCommon, OperateForm cOperateForm1,
+            Form1 form1)
         {
             _form1 = form1;
-            cOperateForm = new OperateForm(form1);
+            //_axJVLink1 = axJVLink1;
+            //cOperateForm = new OperateForm(form1);
+            cOperateForm = cOperateForm1;
             cLog = new ClassLog();
-            cRaceCardStock = new ClcRaceCardStock(form1);
-            cRaceCardRT = new clcRaceCardRT(form1);
+            cRaceCardStock = new ClcRaceCardStock(cCommon, form1);
+            //cRaceCardRT = new clcRaceCardRT(form1);
+            //cRaceCardRT = new clcRaceCardRT(cCommon, axJVLink1);
+            cRaceCardRT = new clcRaceCardRT(cCommon, form1);
             cCSV = new ClassCSV();
         }
 
-        public void update()
+        public void update(string pathTarg)
         {
             cLog.writeLog("update");
             cOperateForm.disableButton();
 
             DateTime datetimeTarg;
-            string pathTarg;
+            //string pathTarg;
             string pathFileR;
-            List<string> listRcsv;
 
-            pathTarg = _form1.textBox1.Text;
+            //pathTarg = _form1.textBox1.Text;
 
             // 出馬表の読み込み
             pathFileR = GetRaceCardFile(pathTarg);
@@ -60,14 +68,17 @@ namespace UpdateRaceCard
             //listRcsv = ReadCSV(pathFileR);
 
             var encoding = Encoding.GetEncoding("shift_jis");
-            cCSV.dataCsvAll = File.ReadAllText(pathFileR, encoding);
+            //cCSV.dataCsvAll = File.ReadAllText(pathFileR, encoding);
+            cCSV.linedataCsvAll = File.ReadAllLines(pathFileR, encoding);
+            cCSV.createCSVarrdata();
+            
+
 
             string tmp;
             tmp = cCSV.getData(2, 1);
             datetimeTarg = DateTime.Parse(tmp);
 
             // 追加項目を記入
-            //listRcsv = writeHeadData(cCSV);
             writeHeadData(cCSV);
 
             // 速報開催情報(一括)の呼び出し
@@ -88,11 +99,13 @@ namespace UpdateRaceCard
             deleteZanteiData(cCSV);
 
             // ファイル出力
+            cCSV.createCSVdataAll();
             File.WriteAllText(pathFileR, cCSV.dataCsvAll, encoding);
 
-            _form1.rtbData.Text = datetimeTarg.ToShortDateString() + 
+            _form1.rtbData.Text = datetimeTarg.ToShortDateString() +
                 " 出馬表更新完了しました。";
 
+            //_axJVLink1.JVClose();
             _form1.axJVLink1.JVClose();
             System.Media.SystemSounds.Asterisk.Play();
             cOperateForm.enableButton();
@@ -110,24 +123,6 @@ namespace UpdateRaceCard
             return path;
         }
 
-        List<string> ReadCSV(string pathTarg)
-        {
-            List<string> lists = new List<string>();
-            var encoding = Encoding.GetEncoding("shift_jis");
-            StreamReader sr = new StreamReader(pathTarg,
-                Encoding.GetEncoding("Shift_JIS"));
-            {
-                while (!sr.EndOfStream)
-                {
-                    string line = sr.ReadLine();
-                    lists.Add(line);
-                }
-            }
-            sr.Close();
-
-            return lists;
-        }
-
 
         private int checkJVRTOpen(DateTime datetimeTarg)
         {
@@ -136,9 +131,11 @@ namespace UpdateRaceCard
             string strDate =
                 (datetimeTarg - timeSpan).ToString("yyyyMMdd");
 
+            //int num2 = _axJVLink1.JVClose();
             int num2 = _form1.axJVLink1.JVClose();
             if (num2 != 0)
                 MessageBox.Show("JVClose エラー：" + num2);
+            //int num1 = _axJVLink1.JVRTOpen(dataspec, strDate);
             int num1 = _form1.axJVLink1.JVRTOpen(dataspec, strDate);
 
             return num1;

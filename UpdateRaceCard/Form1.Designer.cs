@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.mnuConfig = new System.Windows.Forms.ToolStripMenuItem();
@@ -38,7 +37,6 @@
             this.button1 = new System.Windows.Forms.Button();
             this.btnGetJVData = new System.Windows.Forms.Button();
             this.axJVLink1 = new AxJVDTLabLib.AxJVLink();
-            this.tmrDownload = new System.Windows.Forms.Timer(this.components);
             this.prgDownload = new System.Windows.Forms.ProgressBar();
             this.prgJVRead = new System.Windows.Forms.ProgressBar();
             this.rtbData = new System.Windows.Forms.RichTextBox();
@@ -180,7 +178,6 @@
         public System.Windows.Forms.Button button1;
         public System.Windows.Forms.Button btnGetJVData;
         public AxJVDTLabLib.AxJVLink axJVLink1;
-        public System.Windows.Forms.Timer tmrDownload;
         public System.Windows.Forms.ProgressBar prgDownload;
         public System.Windows.Forms.ProgressBar prgJVRead;
         public System.Windows.Forms.RichTextBox rtbData;
