@@ -10,19 +10,19 @@ namespace UpdateRaceCard
     public class clcCommon
     {
         private string sid = "Test";
-        //Form1 _form1;
-        AxJVDTLabLib.AxJVLink _axJVLink1;
+        Form1 _form1;
+        //AxJVDTLabLib.AxJVLink _axJVLink1;
         //private clsCodeConv objCodeConv;
         //private OperateForm cOperateForm;
         //private ClassLog cLog;
         int readcount = 0;
         int downloadcount = 0;
 
-        //public clcCommon(Form1 form1)
-        public clcCommon(AxJVDTLabLib.AxJVLink axJVLink1)
+        public clcCommon(Form1 form1)
+        //public clcCommon(AxJVDTLabLib.AxJVLink axJVLink1)
         {
-            _axJVLink1 = axJVLink1;
-            //_form1 = form1;
+            //_axJVLink1 = axJVLink1;
+            _form1 = form1;
             //cOperateForm = new OperateForm(form1);
             //cLog = new ClassLog();
         }
@@ -31,7 +31,7 @@ namespace UpdateRaceCard
         {
             //cLog.writeLog("checkInit");
 
-            int num = _axJVLink1.JVInit(sid);
+            int num = _form1.axJVLink1.JVInit(sid);
             if (num != 0)
             {
                 MessageBox.Show("JVInit エラー コード：" + num + "：", "エラー",
@@ -48,7 +48,7 @@ namespace UpdateRaceCard
         {
             try
             {
-                int nReturnCode = _axJVLink1.JVSetUIProperties();
+                int nReturnCode = _form1.axJVLink1.JVSetUIProperties();
                 if (nReturnCode != 0)
                 {
                     MessageBox.Show("JVSetUIPropertiesエラー コード：" +
@@ -64,7 +64,7 @@ namespace UpdateRaceCard
 
         public bool isJVOpen(string dataspec, string strDate, int option)
         {
-            int retJVOpen = _axJVLink1.JVOpen(dataspec,
+            int retJVOpen = _form1.axJVLink1.JVOpen(dataspec,
                     strDate + "000000", option,
                     ref readcount, ref downloadcount,
                     out string _);
@@ -87,7 +87,7 @@ namespace UpdateRaceCard
 
         public bool isJVOpenReal(string dataspec, string strDate)
         {
-            int retJVRTOpen = _axJVLink1.JVRTOpen(dataspec, strDate);
+            int retJVRTOpen = _form1.axJVLink1.JVRTOpen(dataspec, strDate);
             if (retJVRTOpen != 0)
             {
                 //cLog.writeLog("[isJVOpenReal]JVOpen エラー：" +
@@ -98,7 +98,7 @@ namespace UpdateRaceCard
             return true;
         }
 
-        public string loopJVRead(int size, int count)
+        public string loopJVRead(int size, int count, bool isProgress)
         {
             string buff;
             bool isLoopEnd = false;
@@ -107,7 +107,7 @@ namespace UpdateRaceCard
                 //System.Windows.Forms.Application.DoEvents();
                 //buff = new string(char.MinValue, size);
                 //filename = new string(char.MinValue, count);
-                switch (_axJVLink1.JVRead(
+                switch (_form1.axJVLink1.JVRead(
                     out buff,
                     out size,
                     out _))
@@ -127,9 +127,12 @@ namespace UpdateRaceCard
                     case -3:
                         continue;
                     case -1:
-                        //if (_form1.prgJVRead.Value + 1 > _form1.prgJVRead.Maximum)
-                        //    _form1.prgJVRead.Maximum = _form1.prgJVRead.Value + 1;
-                        //_form1.prgJVRead.Value++;
+                        if (isProgress)
+                        {
+                            if (_form1.prgJVRead.Value + 1 > _form1.prgJVRead.Maximum)
+                                _form1.prgJVRead.Maximum = _form1.prgJVRead.Value + 1;
+                            _form1.prgJVRead.Value++;
+                        }
                         continue;
                     case 0:
                         return "END";

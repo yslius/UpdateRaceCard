@@ -68,7 +68,7 @@ namespace UpdateRaceCard
                 _form1.prgJVRead.Maximum = 100;
                 do
                 {
-                    retbuff = cCommon.loopJVRead(size, count);
+                    retbuff = cCommon.loopJVRead(size, count, false);
                     if (retbuff == "" || retbuff == "END")
                         break;
                     if (retbuff.Substring(0, 2) == "WE")
@@ -182,7 +182,7 @@ namespace UpdateRaceCard
             }
             do
             {
-                retbuff = cCommon.loopJVRead(size, count);
+                retbuff = cCommon.loopJVRead(size, count, false);
                 if (retbuff == "" || retbuff == "END")
                     break;
                 if (retbuff.Substring(0, 2) == "SE")
@@ -214,7 +214,7 @@ namespace UpdateRaceCard
                 _form1.axJVLink1.JVClose();
                 return true;
             }
-            retbuff = cCommon.loopJVRead(size, count);
+            retbuff = cCommon.loopJVRead(size, count, false);
             if (retbuff == "" || retbuff == "END")
             {
                 //_axJVLink1.JVClose();

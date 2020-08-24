@@ -87,7 +87,7 @@ namespace UpdateRaceCard
             }
             do
             {
-                retbuff = cCommon.loopJVRead(size, count);
+                retbuff = cCommon.loopJVRead(size, count, true);
                 if (retbuff == "" || retbuff == "END")
                     break;
                 if (retbuff.Substring(0, 2) == "HR")
@@ -161,7 +161,7 @@ namespace UpdateRaceCard
                 }
                 do
                 {
-                    retbuff = cCommon.loopJVRead(size, count);
+                    retbuff = cCommon.loopJVRead(size, count, true);
                     if (retbuff == "" || retbuff == "END")
                         break;
                     if (retbuff.Substring(0, 2) == "DM")
