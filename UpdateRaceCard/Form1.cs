@@ -58,8 +58,8 @@ namespace UpdateRaceCard
 
         private void btnGetJVData_Click(object sender, EventArgs e)
         {
-            var sw = new System.Diagnostics.Stopwatch();
-            sw.Start();
+            //var sw = new System.Diagnostics.Stopwatch();
+            //sw.Start();
             cLog.writeLog("btnGetJVData_Click");
 
             if (this.textBox1.Text == "")
@@ -75,9 +75,9 @@ namespace UpdateRaceCard
             clcRaceCard cRaceCard = new clcRaceCard(cCommon, cOperateForm, this);
             cRaceCard.update(textBox1.Text);
 
-            sw.Stop();
-            TimeSpan ts = sw.Elapsed;
-            rtbData.Text = $"{ts}";
+            //sw.Stop();
+            //TimeSpan ts = sw.Elapsed;
+            //rtbData.Text = $"{ts}";
 
         }
 

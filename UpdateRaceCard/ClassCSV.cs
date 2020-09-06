@@ -25,8 +25,8 @@ namespace UpdateRaceCard
                 if (colmax < arrdataCsv.Length)
                     colmax = arrdataCsv.Length;
             }
-            if (colmax < 31)
-                colmax = 31;
+            if (colmax < 33)
+                colmax = 33;
             arrdataCsvAll = new string[linedataCsvAll.Length, colmax];
             //arrdataCsvAll = new string[linedataCsvAll.Length, 37];
 
